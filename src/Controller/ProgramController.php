@@ -4,8 +4,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Program;
+use App\Form\ProgramType;
+// Don't forget the Request use !!
 use App\Repository\ProgramRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -40,15 +44,41 @@ class ProgramController extends AbstractController
          return $this->render('program/list.html.twig', ['page' => $page]);
      }
 
-    #[Route('/new', name: 'new')]
-     public function new(): Response
-     {
-         // traitement d'un formulaire par exemple
+ #[Route('/new', name: 'new')]
+public function new(Request $request, ProgramRepository $programRepository): Response
+{
+    // Create a new Category Object
 
-         // redirection vers la page 'program_show',
+    $program = new Program();
 
-         // correspondant à l'url /program/4
+    // Create the associated Form
 
-         return $this->redirectToRoute('program_show', ['id' => 4]);
-     }
+    $form = $this->createForm(ProgramType::class, $program);
+
+    // Get data from HTTP request
+
+    $form->handleRequest($request);
+
+    // Was the form submitted ?
+
+    if ($form->isSubmitted()) {
+        // Deal with the submitted data
+
+        $programRepository->save($program, true);
+        $this->addFlash('success', 'Form submit success!');
+
+        // Redirect to categories list
+
+        return $this->redirectToRoute('program_new');
+        // For example : persiste & flush the entity
+
+        // And redirect to a route that display the result
+    }
+
+    // Render the form
+
+    return $this->renderForm('program/new.html.twig', [
+        'form' => $form,
+    ]);
+}
 }

@@ -11,16 +11,19 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $program = new Program();
+        for ($i = 0; $i < 15; ++$i) {
+            // code...
 
-        $program->setTitle('david boos');
+            $program = new Program();
 
-        $program->setSynopsis('formateur js');
+            $program->setTitle('program_'.$i);
 
-        $program->setCategory($this->getReference('category_romance'));
+            $program->setSynopsis('formateur js');
 
-        $manager->persist($program);
+            $program->setCategory($this->getReference('category_'.$i));
 
+            $manager->persist($program);
+        }
         $manager->flush();
     }
 
